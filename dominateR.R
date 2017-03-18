@@ -158,25 +158,26 @@ for (n in 1:length(bb2016test)){
   }
 }
 
-
-usm <- readHTMLTable("http://basketball.de/app/usmanager/top-spieler")
-n.rows <- unlist(lapply(usm, function(t) dim(t)[1]))
-grep("<table>", usm)
-grep("</table>", usm)
-
-regexpr("<table>",usm)
-regexpr("</table>",usm)
-
-usmTable <- usm['//table/tbody']
-usmHeaders <- unlist(usm["//thead/tr[2]/th", fun = xmlValue])
-usmplayers <- lapply(usmTable, readHTMLTable, header = usmHeaders)
-usmplayers <- data.frame(usmplayers)
-#colnames(players) <- c("Rk", "Player", "Pos", "Age", "Tm", "G", "GS", "MP", "FG", "FGA", "FGp", "3P", "3PA", "3Pp", "2P", "2PA", "2Pp", "eFGp", "FT", "FTA", "FTp", "ORB", "DRB", "TRB", "AST", "STL", "BLK", "TOV", "PF", "PSperG")
-#players <- players[players$Rk!="Rk",]
-#players1 <- cbind(unique(paste(players$Player)), links)
-
-library(rvest)
-theurl <- "http://basketball.de/app/usmanager/top-spieler"
-file <- read_html(theurl)
-tables <- html_nodes(file, "table")
-table1 <- html_table(tables[4], fill = TRUE)
+save.image(file = "dominateR.RData")
+# 
+# usm <- readHTMLTable("http://basketball.de/app/usmanager/top-spieler")
+# n.rows <- unlist(lapply(usm, function(t) dim(t)[1]))
+# grep("<table>", usm)
+# grep("</table>", usm)
+# 
+# regexpr("<table>",usm)
+# regexpr("</table>",usm)
+# 
+# usmTable <- usm['//table/tbody']
+# usmHeaders <- unlist(usm["//thead/tr[2]/th", fun = xmlValue])
+# usmplayers <- lapply(usmTable, readHTMLTable, header = usmHeaders)
+# usmplayers <- data.frame(usmplayers)
+# #colnames(players) <- c("Rk", "Player", "Pos", "Age", "Tm", "G", "GS", "MP", "FG", "FGA", "FGp", "3P", "3PA", "3Pp", "2P", "2PA", "2Pp", "eFGp", "FT", "FTA", "FTp", "ORB", "DRB", "TRB", "AST", "STL", "BLK", "TOV", "PF", "PSperG")
+# #players <- players[players$Rk!="Rk",]
+# #players1 <- cbind(unique(paste(players$Player)), links)
+# 
+# library(rvest)
+# theurl <- "http://basketball.de/app/usmanager/top-spieler"
+# file <- read_html(theurl)
+# tables <- html_nodes(file, "table")
+# table1 <- html_table(tables[4], fill = TRUE)
