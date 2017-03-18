@@ -140,21 +140,21 @@ for (n in 1:length(bb2016test)){
   bb2016test[[n]] <- cbind(bb2016test[[n]], pos_mp, neg_mp, tot_mp)
 }
 
-summary((bb2016test$`Stephen Curry`)[,c("tot_mp")])
+#summary((bb2016test$`Stephen Curry`)[,c("tot_mp")])
 
-stat <- data.frame(matrix(NA, nrow = 1, ncol =10))
-colnames(stat) <- c(names(summary(1)), "sd", "mean last 5", "mean else", "p value")
-stat<-cbind(names(bb2016test), stat)
+stat16 <- data.frame(matrix(NA, nrow = 1, ncol =10))
+colnames(stat16) <- c(names(summary(1)), "sd", "mean last 5", "mean else", "p value")
+stat16 <-cbind(names(bb2016test), stat16)
 
 for (n in 1:length(bb2016test)){
   points <- (bb2016test[[n]])[,c("tot_mp")]
-  stat[n,2:7] <- as.numeric(summary(points))[1:6]
-  stat[n,8] <- sd(points, na.rm = TRUE)
+  stat16[n,2:7] <- as.numeric(summary(points))[1:6]
+  stat16[n,8] <- sd(points, na.rm = TRUE)
   clean <- na.omit(points)
   if(length(clean)>10){
-    stat[n,9] <- mean(clean[(length(clean)-5):length(clean)])
-    stat[n,10] <- mean(clean[1:(length(clean)-6)])
-    stat[n,11] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,10], alternative = "greater")$p.value
+    stat16[n,9] <- mean(clean[(length(clean)-5):length(clean)])
+    stat16[n,10] <- mean(clean[1:(length(clean)-6)])
+    stat16[n,11] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,10], alternative = "greater")$p.value
   }
 }
 
