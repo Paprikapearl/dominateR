@@ -90,6 +90,7 @@ for (n in 1:length(bbstat)){
   }
 }
 
+stat <- stat[unique(stat$`names(bbstat)`),]
 
 ##all players 2016
 appURL <- "http://www.basketball-reference.com/leagues/NBA_2016_per_game.html"
@@ -159,6 +160,21 @@ for (n in 1:length(bb2016test)){
 }
 
 save.image(file = "dominateR.RData")
+
+bbURL <- "http://basketball.de/app/usmanager/top-spieler"
+bblines <- readLines(bbURL)
+docplayers <- bblines[grep("data-append-csv=", lines)]
+
+overwrite <- function(name){
+  name <- as.character(name)
+  ind <- as.numeric(regexpr(' ', name))
+  
+  out <- paste0(substr(name, (ind+1), nchar(name)), ", ", substr(name, 1, (ind-1)))
+  
+}
+
+stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
+#string zerlegen
 # 
 # usm <- readHTMLTable("http://basketball.de/app/usmanager/top-spieler")
 # n.rows <- unlist(lapply(usm, function(t) dim(t)[1]))
@@ -176,8 +192,10 @@ save.image(file = "dominateR.RData")
 # #players <- players[players$Rk!="Rk",]
 # #players1 <- cbind(unique(paste(players$Player)), links)
 # 
-# library(rvest)
-# theurl <- "http://basketball.de/app/usmanager/top-spieler"
-# file <- read_html(theurl)
-# tables <- html_nodes(file, "table")
+library(rvest)
+theurl <- "http://basketball.de/app/usmanager/top-spieler"
+theurl <- "http://basketball.de/app/usmanager/trades#"
+theurl <- "http://www.basketball-reference.com/leagues/NBA_2016_per_game.html"
+file <- read_html(theurl)
+tables <- html_nodes(file, "table")
 # table1 <- html_table(tables[4], fill = TRUE)
