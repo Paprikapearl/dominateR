@@ -192,6 +192,7 @@ stat <- unique(stat)
 stat <- stat[order(stat$ppg, decreasing = TRUE),]
 
 save.image(file = "dominateR.RData")
+
 library(plotly)
 
 p1 <- ggplot(stat, aes(x = Mean, y = gehalt, label = Name)) + 
