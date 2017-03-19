@@ -16,6 +16,7 @@ score <- function(score_p, score_n){
 }
 
 library(XML)
+library(ggplot2)
 #one player
 #appURL <- "http://www.basketball-reference.com/players/w/westbru01/gamelog/2016/"
 #doc <- htmlParse(appURL)
@@ -161,10 +162,6 @@ for (n in 1:length(bb2016test)){
 
 save.image(file = "dominateR.RData")
 
-bbURL <- "http://basketball.de/app/usmanager/top-spieler"
-bblines <- readLines(bbURL)
-docplayers <- bblines[grep("data-append-csv=", lines)]
-
 overwrite <- function(name){
   name <- as.character(name)
   ind <- as.numeric(regexpr(' ', name))
@@ -173,7 +170,19 @@ overwrite <- function(name){
   
 }
 
+bb_raw <- read.delim2("20170318_players.csv")
 stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
+
+indn <- as.numeric(sapply(stat$`names(bbstat)`, grep, bb_raw$Spieler))
+#cbind(as.character(bb_raw$Spieler[na.omit(indn)]), as.character(stat$`names(bbstat)`[!is.na(indn)]))
+
+stat$pos <- rep(NA, nrow(stat))
+stat$gehalt <- rep(NA, nrow(stat))
+
+stat$pos[!is.na(indn)] <- as.character(bb_raw$Pos.[na.omit(indn)])
+stat$gehalt[!is.na(indn)] <- as.numeric(as.character(bb_raw$Gehalt[na.omit(indn)]))
+
+lm(gehalt ~ Mean, stat)
 #string zerlegen
 # 
 # usm <- readHTMLTable("http://basketball.de/app/usmanager/top-spieler")
@@ -192,10 +201,10 @@ stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
 # #players <- players[players$Rk!="Rk",]
 # #players1 <- cbind(unique(paste(players$Player)), links)
 # 
-library(rvest)
-theurl <- "http://basketball.de/app/usmanager/top-spieler"
-theurl <- "http://basketball.de/app/usmanager/trades#"
-theurl <- "http://www.basketball-reference.com/leagues/NBA_2016_per_game.html"
-file <- read_html(theurl)
-tables <- html_nodes(file, "table")
-# table1 <- html_table(tables[4], fill = TRUE)
+# library(rvest)
+# theurl <- "http://basketball.de/app/usmanager/top-spieler"
+# theurl <- "http://basketball.de/app/usmanager/trades#"
+# theurl <- "http://www.basketball-reference.com/leagues/NBA_2016_per_game.html"
+# file <- read_html(theurl)
+# tables <- html_nodes(file, "table")
+# # table1 <- html_table(tables[4], fill = TRUE)
