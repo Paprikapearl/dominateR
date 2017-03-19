@@ -160,7 +160,7 @@ for (n in 1:length(bb2016test)){
   }
 }
 
-save.image(file = "dominateR.RData")
+
 
 overwrite <- function(name){
   name <- as.character(name)
@@ -182,7 +182,31 @@ stat$gehalt <- rep(NA, nrow(stat))
 stat$pos[!is.na(indn)] <- as.character(bb_raw$Pos.[na.omit(indn)])
 stat$gehalt[!is.na(indn)] <- as.numeric(as.character(bb_raw$Gehalt[na.omit(indn)]))
 
-lm(gehalt ~ Mean, stat)
+stat$ppg <- stat$Mean / stat$gehalt
+
+
+model <- lm(gehalt ~ Mean, stat)
+
+colnames(stat)[1] <- "Name"
+stat <- unique(stat)
+stat <- stat[order(stat$ppg, decreasing = TRUE),]
+
+save.image(file = "dominateR.RData")
+library(plotly)
+
+p1 <- ggplot(stat, aes(x = Mean, y = gehalt, label = Name)) + 
+      geom_point() +
+      stat_smooth(method = "lm", col = "red")
+gg1 <- ggplotly(p1)
+
+p2 <- ggplot(stat, aes(x = stat$`mean last 5`, y = gehalt, label = Name)) + 
+      geom_point() +
+      stat_smooth(method = "lm", col = "red")
+gg2 <- ggplotly(p2)
+
+team <- function(vec, stat, on){
+  
+}
 #string zerlegen
 # 
 # usm <- readHTMLTable("http://basketball.de/app/usmanager/top-spieler")
