@@ -16,7 +16,7 @@ score <- function(score_p, score_n){
 }
 
 library(XML)
-library(ggplot2)
+library(lubridate)
 #one player
 #appURL <- "http://www.basketball-reference.com/players/w/westbru01/gamelog/2016/"
 #doc <- htmlParse(appURL)
@@ -73,25 +73,62 @@ for (n in 1:length(bbstat)){
   bbstat[[n]] <- cbind(bbstat[[n]], pos_mp, neg_mp, tot_mp)
 }
 
-summary((bbstat$`Stephen Curry`)[,c("tot_mp")])
+#summary((bbstat$`Stephen Curry`)[,c("tot_mp")])
 
-stat <- data.frame(matrix(NA, nrow = 1, ncol =10))
-colnames(stat) <- c(names(summary(1)), "sd", "mean last 5", "mean else", "p value")
-stat<-cbind(names(bbstat), stat)
+stat <- data.frame(matrix(NA, nrow = 1, ncol =13))
+colnames(stat) <- c(names(summary(1)), "sd", "min last 5", "min else", "p value mins", "mean last 5", "mean else", "p value means")
+stat <- cbind(names(bbstat), stat)
 
 for (n in 1:length(bbstat)){
   points <- (bbstat[[n]])[,c("tot_mp")]
+  mins <- paste0((bbstat[[n]])[,c("MP")])
+  mins[mins == "NA"] <- NA
   stat[n,2:7] <- as.numeric(summary(points))[1:6]
   stat[n,8] <- sd(points, na.rm = TRUE)
   clean <- na.omit(points)
-  if(length(clean)>10){
-    stat[n,9] <- mean(clean[(length(clean)-5):length(clean)])
-    stat[n,10] <- mean(clean[1:(length(clean)-6)])
-    stat[n,11] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,10], alternative = "greater")$p.value
+  cmins <- na.omit(as.numeric(as.period(ms(mins), unit = "sec"))) / 60
+  if(length(clean) > 10){
+    stat[n,9] <- mean(cmins[(length(cmins)-5):length(cmins)])
+    stat[n,10] <- mean(cmins[1:(length(cmins)-6)])    
+    stat[n,11] <- t.test(cmins[(length(cmins)-5):length(cmins)], mu = stat[n,10], alternative = "greater")$p.value
+    stat[n,12] <- mean(clean[(length(clean)-5):length(clean)])
+    stat[n,13] <- mean(clean[1:(length(clean)-6)])
+    stat[n,14] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,13], alternative = "greater")$p.value
   }
 }
 
-stat <- stat[unique(stat$`names(bbstat)`),]
+
+overwrite <- function(name){
+  name <- as.character(name)
+  ind <- as.numeric(regexpr(' ', name))
+  
+  out <- paste0(substr(name, (ind+1), nchar(name)), ", ", substr(name, 1, (ind-1)))
+  
+}
+
+bb_raw <- read.delim2("20170318_players.csv")
+stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
+
+indn <- as.numeric(sapply(stat$`names(bbstat)`, grep, bb_raw$Spieler))
+#cbind(as.character(bb_raw$Spieler[na.omit(indn)]), as.character(stat$`names(bbstat)`[!is.na(indn)]))
+
+stat$pos <- rep(NA, nrow(stat))
+stat$gehalt <- rep(NA, nrow(stat))
+
+stat$pos[!is.na(indn)] <- as.character(bb_raw$Pos.[na.omit(indn)])
+stat$gehalt[!is.na(indn)] <- as.numeric(as.character(bb_raw$Gehalt[na.omit(indn)]))
+
+stat$ppg <- stat$Mean / stat$gehalt
+stat$ppgl <- stat$`mean last 5` / stat$gehalt
+
+model <- lm(gehalt ~ Mean, stat)
+
+colnames(stat)[1] <- "Name"
+stat <- unique(stat)
+stat <- stat[order(stat$ppg, decreasing = TRUE),]
+
+save.image(file = "dominateR.RData")
+
 
 ##all players 2016
 appURL <- "http://www.basketball-reference.com/leagues/NBA_2016_per_game.html"
@@ -160,50 +197,6 @@ for (n in 1:length(bb2016test)){
   }
 }
 
-
-
-overwrite <- function(name){
-  name <- as.character(name)
-  ind <- as.numeric(regexpr(' ', name))
-  
-  out <- paste0(substr(name, (ind+1), nchar(name)), ", ", substr(name, 1, (ind-1)))
-  
-}
-
-bb_raw <- read.delim2("20170318_players.csv")
-stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
-
-indn <- as.numeric(sapply(stat$`names(bbstat)`, grep, bb_raw$Spieler))
-#cbind(as.character(bb_raw$Spieler[na.omit(indn)]), as.character(stat$`names(bbstat)`[!is.na(indn)]))
-
-stat$pos <- rep(NA, nrow(stat))
-stat$gehalt <- rep(NA, nrow(stat))
-
-stat$pos[!is.na(indn)] <- as.character(bb_raw$Pos.[na.omit(indn)])
-stat$gehalt[!is.na(indn)] <- as.numeric(as.character(bb_raw$Gehalt[na.omit(indn)]))
-
-stat$ppg <- stat$Mean / stat$gehalt
-
-
-model <- lm(gehalt ~ Mean, stat)
-
-colnames(stat)[1] <- "Name"
-stat <- unique(stat)
-stat <- stat[order(stat$ppg, decreasing = TRUE),]
-
-save.image(file = "dominateR.RData")
-
-library(plotly)
-
-p1 <- ggplot(stat, aes(x = Mean, y = gehalt, label = Name)) + 
-      geom_point() +
-      stat_smooth(method = "lm", col = "red")
-gg1 <- ggplotly(p1)
-
-p2 <- ggplot(stat, aes(x = stat$`mean last 5`, y = gehalt, label = Name)) + 
-      geom_point() +
-      stat_smooth(method = "lm", col = "red")
-gg2 <- ggplotly(p2)
 
 team <- function(vec, stat, on){
   

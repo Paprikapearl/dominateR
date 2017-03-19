@@ -4,9 +4,13 @@ library(shiny)
 shinyUI(pageWithSidebar(
   
   # Application title
-  headerPanel("Miles Per Gallon"),
+  headerPanel("Basketball.de #winning"),
   
   sidebarPanel(),
   
-  mainPanel()
+  mainPanel(
+    dataTableOutput('mytable'),
+    plotlyOutput('meanPlot', height = "640px"),
+    plotlyOutput('lastPlot', height = "640px")
+  )
 ))
