@@ -106,7 +106,8 @@ overwrite <- function(name){
   
 }
 
-bb_raw <- read.delim2("20170318_players.csv")
+setwd("/run/media/atoeroek/Data/basketball.de_data")
+bb_raw <- read.delim2("20170324_players.csv")
 stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
 
 indn <- as.numeric(sapply(stat$`names(bbstat)`, grep, bb_raw$Spieler))
@@ -127,6 +128,7 @@ colnames(stat)[1] <- "Name"
 stat <- unique(stat)
 stat <- stat[order(stat$ppg, decreasing = TRUE),]
 
+setwd("/run/media/atoeroek/Data/dominateR")
 save.image(file = "dominateR.RData")
 
 
