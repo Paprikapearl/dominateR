@@ -14,7 +14,7 @@ shinyServer(function(input, output) {
     
     p1 <- ggplot(stat, aes(x = Mean, y = gehalt, label = Name)) + 
       geom_point() +
-      stat_smooth(method = "lm", col = "red")
+      stat_smooth(data = stat[stat$gehalt > 0.5,], method = "lm", col = "red")
     
     gg1 <- ggplotly(p1)
     
@@ -22,9 +22,9 @@ shinyServer(function(input, output) {
   
   output$lastPlot <- renderPlotly({
     
-    p2 <- ggplot(stat, aes(x = stat$`mean last 5`, y = gehalt, label = Name)) + 
-      geom_point() +
-      stat_smooth(method = "lm", col = "red")
+    p2 <- ggplot() + 
+      geom_point(data = stat, aes(x = stat$`mean last 5`, y = gehalt, label = Name)) +
+      stat_smooth(data = stat[stat$gehalt > 0.5,], aes(x = Mean, y = gehalt), formula = y ~ x, method = "lm", col = "red")
     
     gg2 <- ggplotly(p2)
     
