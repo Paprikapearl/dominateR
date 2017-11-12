@@ -1,6 +1,6 @@
-library(shiny)
 library(ggplot2)
 library(plotly)
+library(shiny)
 
 load("dominateR2018.RData")
 
