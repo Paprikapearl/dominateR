@@ -7,7 +7,7 @@ load("dominateR2018.RData")
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
   output$mytable = renderDataTable({
-    stat[,c("Name", "Mean", "games", "sd", "points total", "pos", "gehalt", "ppg", "value", "valuation")]
+    stat[,c("Name", "Mean", "games", "sd", "min last 5", "min else", "p value mins", "mean last 5", "mean else", "p value means", "points total", "pos", "gehalt", "ppg", "value", "valuation")]
   })
   
   output$meanPlot <- renderPlotly({

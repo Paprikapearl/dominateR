@@ -55,7 +55,7 @@ for (i in 1:length(bb)){
   doc <- htmlParse(rawToChar(GET(appURL)$content))
   appTables <- doc['//table/tbody']
   myHeaders <- unlist(doc["//thead/tr[2]/th", fun = xmlValue])
-  myTables <- lapply(appTables, readHTMLTable, header = myHeaders)
+  myTables <- lapply(appTables, readHTMLTable, header = myHeaders, stringsAsFactors = FALSE)
   person <- data.frame(myTables)
   if(ncol(person) == 30){
     colnames(person) <- c("Rk", "G", "Date", "Age", "Tm", "-", "Opp", "Res", "GS", "MP", "FG", "FGA", "FGp", "3P", "3PA", "3Pp", "FT", "FTA", "FTp", "ORB", "DRB", "TRB", "AST", "STL", "BLK", "TOV", "PF", "PTS", "GmSc", "plusminus")
@@ -80,7 +80,8 @@ for (n in 1:length(bbstat)){
 
 stat <- data.frame(matrix(NA, nrow = 1, ncol = 15))
 colnames(stat) <- c(names(summary(1)), "games", "sd", "min last 5", "min else", "p value mins", "mean last 5", "mean else", "p value means","points total")
-stat <- cbind(names(bbstat), stat)
+stat <- cbind(paste0(names(bbstat)), stat)
+colnames(stat)[1] <- "Name"
 
 for (n in 1:length(bbstat)){
   if(!is.null(bbstat[[n]]$'tot_mp')){
@@ -116,10 +117,10 @@ overwrite <- function(name){
 }
 
 setwd("/run/media/atoeroek/Data/basketball.de_data")
-bb_raw <- read.delim2("2017end_players_Tab.csv")
-#stat$`names(bbstat)` <- sapply(stat$`names(bbstat)`, overwrite)
+bb_raw <- read.delim("20171112_players.csv", stringsAsFactors = FALSE)
+stat$Name <- sapply(stat$Name, overwrite)
 
-indn <- as.numeric(sapply(stat$`names(bbstat)`, grep, bb_raw$Spieler))
+indn <- as.numeric(sapply(stat$Name, grep, bb_raw$Spieler))
 #cbind(as.character(bb_raw$Spieler[na.omit(indn)]), as.character(stat$`names(bbstat)`[!is.na(indn)]))
 
 stat$pos <- rep(NA, nrow(stat))
