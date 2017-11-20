@@ -97,10 +97,10 @@ for (n in 1:length(bbstat)){
     if(length(clean) > 10){
       stat[n,10] <- mean(cmins[(length(cmins)-5):length(cmins)])
       stat[n,11] <- mean(cmins[1:(length(cmins)-6)])    
-      stat[n,12] <- t.test(cmins[(length(cmins)-5):length(cmins)], mu = stat[n,10], alternative = "greater")$p.value
+      stat[n,12] <- t.test(cmins[(length(cmins)-5):length(cmins)], mu = stat[n,11], alternative = "greater")$p.value
       stat[n,13] <- mean(clean[(length(clean)-5):length(clean)])
       stat[n,14] <- mean(clean[1:(length(clean)-6)])
-      stat[n,15] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,13], alternative = "greater")$p.value
+      stat[n,15] <- t.test(clean[(length(clean)-5):length(clean)], mu = stat[n,14], alternative = "greater")$p.value
     }
   }
   
@@ -117,7 +117,7 @@ overwrite <- function(name){
 }
 
 setwd("/run/media/atoeroek/Data/basketball.de_data")
-bb_raw <- read.delim("20171112_players.csv", stringsAsFactors = FALSE)
+bb_raw <- read.delim("20171119_players.csv", stringsAsFactors = FALSE)
 stat$Name <- sapply(stat$Name, overwrite)
 
 indn <- as.numeric(sapply(stat$Name, grep, bb_raw$Spieler))
