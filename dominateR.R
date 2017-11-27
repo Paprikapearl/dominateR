@@ -88,7 +88,7 @@ for (n in 1:length(bbstat)){
     points <- bbstat[[n]]$'tot_mp'
     mins <- paste0((bbstat[[n]])[,c("MP")])
     mins[mins == "NA"] <- NA
-    stat[n,8] <- bbstat[[n]][nrow(bbstat[[n]]),c("G")]
+    stat[n,8] <- as.numeric(bbstat[[n]][nrow(bbstat[[n]]),c("G")])
     stat[n,2:7] <- as.numeric(summary(points))[1:6]
     stat[n,9] <- sd(points, na.rm = TRUE)
     stat[n,16] <- sum(points, na.rm = TRUE)
@@ -117,7 +117,7 @@ overwrite <- function(name){
 }
 
 setwd("/run/media/atoeroek/Data/basketball.de_data")
-bb_raw <- read.delim("20171119_players.csv", stringsAsFactors = FALSE)
+bb_raw <- read.delim("20171126_players.csv", stringsAsFactors = FALSE)
 stat$Name <- sapply(stat$Name, overwrite)
 
 indn <- as.numeric(sapply(stat$Name, grep, bb_raw$Spieler))
@@ -132,15 +132,15 @@ stat$gehalt[!is.na(indn)] <- as.numeric(as.character(bb_raw$Gehalt[na.omit(indn)
 stat$ppg <- stat$Mean / stat$gehalt
 stat$ppgl <- stat$`mean last 5` / stat$gehalt
 
-statmod <- stat[stat$games > 5 & stat$gehalt > 0.5,]
+statmod <- stat[stat$games > 6 & stat$gehalt > 0.5,]
 model <- lm(gehalt ~ Mean, statmod)
 
-stat$value <- sapply(stat$Mean, function(x){-1.1823 + 0.3712 * x})
+stat$value <- sapply(stat$Mean, function(x){model$coefficients[1] + model$coefficients[2] * x})
 stat$valuation <- stat$value - stat$gehalt
 
 colnames(stat)[1] <- "Name"
 stat <- unique(stat)
-stat <- stat[order(stat$ppg, decreasing = TRUE),]
+stat <- stat[order(stat$valuation, decreasing = TRUE),]
 
 setwd("/run/media/atoeroek/Data/dominateR")
 save.image(file = "dominateR2018.RData")
