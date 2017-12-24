@@ -117,7 +117,7 @@ overwrite <- function(name){
 }
 
 setwd("/run/media/atoeroek/Data/basketball.de_data")
-bb_raw <- read.delim("20171210_players.csv", stringsAsFactors = FALSE)
+bb_raw <- read.delim("20171217_players.csv", stringsAsFactors = FALSE)
 stat$Name <- sapply(stat$Name, overwrite)
 
 indn <- as.numeric(sapply(stat$Name, grep, bb_raw$Spieler))
