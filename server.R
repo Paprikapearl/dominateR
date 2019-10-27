@@ -1,8 +1,7 @@
-library(ggplot2)
 library(plotly)
 library(shiny)
 
-load("dominateR2018.RData")
+load("dominateR2019.RData")
 
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
